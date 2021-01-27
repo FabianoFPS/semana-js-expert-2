@@ -21,7 +21,6 @@ class SocketBuilder {
     })
     socket.on('user-connected', this.onUserConnected);
     socket.on('user-disconnected', this.onUserDisconnected);
-
     return socket;
   }
 }
