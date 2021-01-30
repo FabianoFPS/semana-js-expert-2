@@ -8,7 +8,7 @@ class Recorder {
 
     this.mediaRecorder = {};
     this.recordedBlobs = [];
-    
+
     this.completeRecordings = [];
     this.recordingActive = false;
   }
@@ -51,19 +51,37 @@ class Recorder {
     this.recordingActive = true;
   }
 
-  // async stopRecording() {
-  //   if (!this.recordingActive) return;
-  //   if (this.mediaRecorder.state === 'inactive') return;
+  async stopRecording() {
+    if (!this.recordingActive) return;
+    if (this.mediaRecorder.state === 'inactive') return;
 
-  //   console.log(`Media recorded stopped! ${this.userName}`);
-  //   this.mediaRecorder.stop();
-  //   this.recordingActive = false;
-  //   await Util.sleep(200);
-  //   this.completeRecordings.push([...this.recordedBlobs]);
-  //   this.recordedBlobs = [];
-  // }
+    console.log(`Media recorded stopped! ${this.userName}`);
+    this.mediaRecorder.stop();
+    this.recordingActive = false;
+    await Util.sleep(200);
+    this.completeRecordings.push([...this.recordedBlobs]);
+    this.recordedBlobs = [];
+  }
 
+  getAllVideoURLs() {
+    return this.completeRecordings.map(recording => {
+      const superBuffer = new Blob(recording, { type: this.videoType });
+      return window.URL.createObjectURL(superBuffer);
+    })
+  }
 
+  download() {
+    if (!this.completeRecordings.length) return;
 
-
+    for(const recording of this.completeRecordings){
+      const blob = new Blob(recording, {type: this.videoType});
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `${this.filename}.webm`;
+      document.body.appendChild(a);
+      a.click();
+    }
+  }
 }
